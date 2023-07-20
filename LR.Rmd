@@ -1,0 +1,164 @@
+---
+title: "Linear Regression"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+
+## 1.HOUSING VALUES IN BOSTON
+
+
+### 1.1)
+
+```{r}
+data<- read.csv("./data/boston.csv.bz2",sep="\t")
+head(data)
+cat("\n The number of observations in data :",nrow(data))
+cat("\n The number of columns/attributes are : ",ncol(data))
+cat("\n The number of missing values in data : ",sum(is.na(data)))
+cat("\n There are no unreasonable values as such present in the data")
+
+```
+
+
+
+### 2)
+
+
+#### 1) medv vs rm(avg number of rooms per dwelling)
+
+a)
+```{r}
+library(ggplot2)
+ggplot(data,aes(x=rm,y=medv)) + geom_point() + geom_smooth(method="lm")+labs(title="rm vs medv", x="Avg number of rooms per dwelling)", y="Median value of homes(in thousand $")
+```
+The regression line shows a positive relation(positive slope) between median value of homes and avg number of rooms per dwelling.Data points in the range of 15 to 35 are closer to the regression line whereas for data points at $50k are further from the regression line.
+
+b)
+```{r}
+model1<-lm(medv~rm,data=data)
+summary(model1)
+model1
+```
+
+c)Through the plot and the model output we can say that slope of regression line is positive/ there is positive relation between medv and rm i.e as the avg number of rooms per dwelling increases the median value of owner-occupied homes also increases. The model is statistically significant as p<0.05. 
+
+
+d)The estimated regression line can be written as medv = -34.671 + (9.102)*lstat.The slope of the regression is positive indicating that as the avg number of rooms per dwelling increases the median value of owner-occupied homes also increases.
+As p<0.05 hence we can say that the model is statistically significant as we can reject the null hypothesis and we can say that changes in predictor's value is related to changes in response variable. 
+Considering the social processes, the relationship makes sense as higher the number of rooms in a house/house size higher is the price of the house.
+
+
+#### 2)medv vs lstat(lower status of population)
+
+
+a)
+```{r}
+ggplot(data,aes(x=lstat,y=medv)) + geom_point() + geom_smooth(method="lm")+labs(title="lstat vs medv", x="lower status of the population (percent))", y="Median value of homes(in thousand $")
+```
+For higher values of lstat(lower status of population) the median value of homes is lower.
+
+
+b)
+```{r}
+model2<-lm(medv~lstat,data=data)
+model2
+summary(model2)
+```
+
+c)The slope of the regression line is negative which means that as the percentage of lower status of population increases the median value of houses decreases. The result is statistically significant as there is relation between the predictor and response variable.
+
+
+
+d)From a socio-economic perspective, low status of population indicates lower income, poor standard of living and hence the median value of cost of homes is lower to cater to the needs.The estimated regression line can be written as medv = 34.55 + (-0.95)*lstat. The slope indicates the negative/inverse relationship between the predictor and response.
+
+  
+
+#### 3)medv vs crim
+
+a)
+```{r}
+library(ggplot2)
+ggplot(data,aes(x=crim,y=medv)) + geom_point() + geom_smooth(method="lm")+labs(title="crim vs medv", x="per capita crime rate by neighborhood", y="Median value of homes(in thousand $)")
+```
+Through the plot we can see that neighborhoods with highest crime rate have comparatively lower median value/cost of homes. For houses with maximum median value still have 0 to some amount of crime where houses with median cost in range of $30-40 thousand have more or less 0 crime rates.
+
+b)
+```{r}
+model3<-lm(medv~crim,data=data)
+model3
+summary(model3)
+```
+
+c)
+The estimated regression line can be written as medv = 24.0331 + (-0.4152)*crim.Therefore the slope of the line is negative which indicates that higher the per capita crime rate lower is the median value of houses. it is statistically significant as p<0.05 which indicates there is relation between the predictor and response variable.
+
+d)
+Considering the social aspects of house pricing,higher the crime rate lower is the house pricing in the neighborhood. This is evident through the negative slope of the graph as well.It is obvious that in neighborhoods with higher crimes, due to safety issues people will not buy houses and hence to make up for it, the overall pricing of the houses will be lowered in an effort to sell, hence the median price/value of the houses will be lower.
+
+
+
+3) The relationship shown in the plots are clearly evident in the models and their results as well. The models are statistically significant (hence rejecting null hypothesis) and relation between predictors and response variables are evident through the plots. 
+
+
+
+4)
+The t-value is calculated by t=Estimate/Std. Error from the summary of the regression model.
+The null hypothesis or H0 here in this case is that- there is no significant relationship between the predictor variable x(in this case rm - average number of rooms per dwelling) and response variable y(i.e. median value of homes). 
+The critical t-value for the model of medv vs rm is 21.72.
+
+
+
+5)
+```{r}
+mult_reg_model<-lm(medv~. , data=data)
+mult_reg_model
+summary(mult_reg_model)
+
+```
+The null hypothesis is rejected if p<0.05. For most of the predictors the P value is <0.05 hence the null hypothesis is rejected for crim, zn, chas, nox, rm, dis, rad, tax, ptratio, black and lstat. The null hypothesis is that there is no relationship between X variables and Y variables which means that the for each X variable adding that X variable to multiple regression does not improve the fit of the model.
+By rejecting the null hypothesis for the above mentioned predictors we say that the predictors do impact the fit of the model. The two predictors that do no impact the fit of the model when combined with others( for which null hypothesis is not rejected) are indus and age as their p value >0.05.
+
+
+6)
+
+```{r}
+m_3<-lm(medv~rm+lstat+indus,data=data)
+m_3
+summary(m_3)
+```
+The estimated regression line can be written as medv = (-0.96865)+(5.07379)*rm+(-0.60671)*lstat+(-0.06364)*indus.
+This simply means that the median price of house increases as (rm) average number of rooms per dwelling increases and it has negative correlation with lstat and indus meaning that the median price of house decreases if lstat(lower status of population) increases and indus(proportion of non-retail business acres per neighborhood) increases.
+The results are statistically significant for rm and lstat as the pvalue is lower than 0.05 which means that these predictors contribute to the fit of the regression model whereas for indus p value is greater than 0.05 which means that it does not affect the fit of the model.
+
+
+
+
+7)Comparing various aspects of the result of the regression model:
+The Residual standard error measures how well a regression model fits a dataset, smaller the residual standard erro better the regression model fits the dataset. In (2) for all three linear models of regressions (medv vs rm, medv vs lstat and medv vs crim) the model has 504 dof( which provides an estimate for no of data points taht went into estimation) and for these the Residual standard errors for each of the models are larger that that for (5) which means the multiple regression model has a better fit (for dof 492).
+The p value for models in (2) and (5) are below 0.05 which means that null hypothesis is rejected. However for (5) as we are taking into consideration multiple predictors there are certain predictors whose p value> 0.05 and hence when used with other predictor variables the predictors(indus and age ) do not impact the fit of the model.
+The adjusted r squared value for (5) is higher than that of individual models in (2) which is due to the fact that higher adjusted r squared values indicate that additional input variables are adding value to the model.
+Overall the predictors tell the same basic story of how they affect the response variable of medv, with some predictors affecting the response variable more than others.
+
+
+
+
+##2)Interpret Regression Results
+
+
+2.1)The neighborhoods with more evictions see more 311 calls. The 311 calls increase by 0.048 for every 1 unit increase of evictions.
+
+
+2.2) Yes the values are statistically significant as the p value is less than 0.05 and hence falls within confidence level.
+
+2.3)Poverty rate is negatively associated with number of 311 calls. Hence higher the rate of poverty, fewer calls for service are observed.
+
+2.4) Race(white) is negatively correlated with the number of calls as per the value -0.038 mentioned in the table. This means that Higher the number of white people lower is the number of 311 calls.i.e for 311 calls decrease by 0.038 for 1 unit increase in race.
+
+2.5)Higher median ages are associated with more 311 calls.According to the table, the value mentioned 0.0067 is highly statistically significant at level p<0.01 and p<0.05 as well.
+
+2.6)The value for housing density is -0.13. Housing density refers to the number of housing units per land in an area.In this case, Greater housing density results in lower number of calls for services. Hence the value -0.13 refers to the lower number of 311 calls. i.e the 311 calls decrease by 0.13 for every 1 unit increase in housing density.
+
+2.7)As compared to Austin, Philadelphia had fewer calls.
